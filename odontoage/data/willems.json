@@ -1,0 +1,48 @@
+{
+  "family": "willems",
+  "family_label": "Willems dental age estimation (Demirjian revisited)",
+  "schema_version": "1.0",
+  "methods": {
+    "willems_2001": {
+      "id": "willems_2001",
+      "label": "Willems (2001) - direct-age tables",
+      "family": "willems",
+      "kind": "direct_age",
+      "dentition": "developing",
+      "measurement": "staging",
+      "sex_required": true,
+      "age_range_years": [3, 18],
+      "age_range_note": "Belgian Caucasian reference sample; the seven per-tooth year-values are summed directly to give the estimated dental age (no maturity-score conversion step). Reduces Demirjian's systematic overestimation.",
+      "prediction_error_years": 1.1,
+      "reported_stats": {"boys_diff_sd_years": 0.9, "girls_diff_sd_years": 1.3, "note": "SD of (dental age - chronological age) for the adapted method on the validation sample; the 95% interval uses ~1.1 y as a representative value."},
+      "teeth": ["I1", "I2", "C", "PM1", "PM2", "M1", "M2"],
+      "teeth_fdi": ["31", "32", "33", "34", "35", "36", "37"],
+      "stages": ["A", "B", "C", "D", "E", "F", "G", "H"],
+      "aggregation": "sum",
+      "notes": "Values are ANOVA-adapted age contributions in YEARS; they are intentionally non-monotonic and some are negative (a multicolinearity artifact) and are meaningful only in the total sum, per the authors.",
+      "tables": {
+        "male": {
+          "I1": {"C": 1.68, "D": 1.49, "E": 1.5, "F": 1.86, "G": 2.07, "H": 2.19},
+          "I2": {"C": 0.55, "D": 0.63, "E": 0.74, "F": 1.08, "G": 1.32, "H": 1.64},
+          "C": {"D": 0.04, "E": 0.31, "F": 0.47, "G": 1.09, "H": 1.9},
+          "PM1": {"A": 0.15, "B": 0.56, "C": 0.75, "D": 1.11, "E": 1.48, "F": 2.03, "G": 2.43, "H": 2.83},
+          "PM2": {"A": 0.08, "B": 0.05, "C": 0.12, "D": 0.27, "E": 0.33, "F": 0.45, "G": 0.4, "H": 1.15},
+          "M1": {"D": 0.69, "E": 1.14, "F": 1.6, "G": 1.95, "H": 2.15},
+          "M2": {"A": 0.18, "B": 0.48, "C": 0.71, "D": 0.8, "E": 1.31, "F": 2.0, "G": 2.48, "H": 4.17}
+        },
+        "female": {
+          "I1": {"C": 1.83, "D": 2.19, "E": 2.34, "F": 2.82, "G": 3.19, "H": 3.14},
+          "I2": {"D": 0.29, "E": 0.32, "F": 0.49, "G": 0.79, "H": 0.7},
+          "C": {"C": 0.6, "D": 0.54, "E": 0.62, "F": 1.08, "G": 1.72, "H": 2.0},
+          "PM1": {"A": -0.95, "B": -0.15, "C": 0.16, "D": 0.41, "E": 0.6, "F": 1.27, "G": 1.58, "H": 2.19},
+          "PM2": {"A": -0.19, "B": 0.01, "C": 0.27, "D": 0.17, "E": 0.35, "F": 0.35, "G": 0.55, "H": 1.51},
+          "M1": {"D": 0.62, "E": 0.9, "F": 1.56, "G": 1.82, "H": 2.21},
+          "M2": {"A": 0.14, "B": 0.11, "C": 0.21, "D": 0.32, "E": 0.66, "F": 1.28, "G": 2.09, "H": 4.04}
+        }
+      },
+      "source": "willems_2001",
+      "verified": true,
+      "verification_note": "Boys (Table 1) and girls (Table 2) year-value grids transcribed from the primary paper (Willems et al. 2001, J Forensic Sci 46(4):893-895) rendered at high DPI. No sum-to-100 checksum exists (direct-age method); validated by an all-stage-H sanity total (boys ~16.0 y, girls ~15.8 y - the correct developmental ceiling) and against the paper's documented negative/non-monotonic values."
+    }
+  }
+}

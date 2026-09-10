@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "odontoage"
+version = "0.1.0"
+description = "Open, cross-verified reference implementation of dental age-estimation methods (Cameriere, Demirjian, Willems, Kvaal)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Hossein Boustani Hezarani" }]
+keywords = [
+  "dental age estimation", "forensic odontology", "forensic dentistry",
+  "Cameriere", "Demirjian", "Willems", "Kvaal", "age estimation",
+  "paediatric dentistry", "legal medicine", "open apices",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Healthcare Industry",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Medical Science Apps.",
+  "Operating System :: OS Independent",
+]
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.urls]
+Homepage = "https://github.com/Hezarani/odontoage"
+Documentation = "https://hezarani.github.io/odontoage/"
+Repository = "https://github.com/Hezarani/odontoage"
+"Live demo" = "https://hezarani.github.io/odontoage/"
+Issues = "https://github.com/Hezarani/odontoage/issues"
+
+[project.scripts]
+odontoage = "odontoage.cli:main"
+
+[tool.setuptools]
+packages = ["odontoage", "odontoage.methods"]
+
+[tool.setuptools.package-data]
+odontoage = ["data/*.json"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

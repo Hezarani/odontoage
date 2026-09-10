@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>OdontoAge — open dental age estimation</title>
+<meta name="description" content="An open, cross-verified reference implementation of dental age-estimation methods (Cameriere, Demirjian, Willems, Kvaal). Research and education only." />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" content="#0e5a6b" />
+<meta property="og:title" content="OdontoAge — open dental age estimation" />
+<meta property="og:description" content="Open, tested, citable reference implementation of Cameriere, Demirjian, Willems and Kvaal dental age-estimation methods. Research/education only." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="social-preview.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%A6%B7%3C/text%3E%3C/svg%3E" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "OdontoAge",
+  "description": "Open reference implementation of dental age-estimation methods (Cameriere, Demirjian, Willems, Kvaal).",
+  "codeRepository": "https://github.com/Hezarani/odontoage",
+  "programmingLanguage": ["Python", "JavaScript"],
+  "license": "https://opensource.org/licenses/MIT",
+  "author": {"@type": "Person", "name": "Hossein Boustani Hezarani", "identifier": "https://orcid.org/0009-0007-8481-0498"}
+}
+</script>
+<style>
+  :root{
+    --bg:#f6f7f8; --surface:#ffffff; --surface-2:#eef1f2; --ink:#12181b; --ink-2:#516066;
+    --line:rgba(20,40,48,.12); --accent:#0e6a7e; --accent-ink:#ffffff; --accent-soft:rgba(14,106,126,.10);
+    --ok:#1f8a4c; --warn:#9a6b00; --danger:#b0322b; --pending:#8a939a;
+    --radius:16px; --radius-sm:11px; --shadow:0 1px 2px rgba(16,34,40,.06),0 8px 24px rgba(16,34,40,.07);
+    --shadow-lg:0 12px 40px rgba(16,34,40,.16); --maxw:1060px; --spring:.34s cubic-bezier(.22,.61,.36,1);
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0c1013; --surface:#151b1f; --surface-2:#1c242a; --ink:#eef3f4; --ink-2:#a6b3b8;
+    --line:rgba(255,255,255,.12); --accent:#38c0d8; --accent-ink:#04222a; --accent-soft:rgba(56,192,216,.14);
+    --ok:#54c983; --warn:#e0b24d; --danger:#f0857e; --pending:#6c7880;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.5); --shadow-lg:0 16px 48px rgba(0,0,0,.6);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0c1013; --surface:#151b1f; --surface-2:#1c242a; --ink:#eef3f4; --ink-2:#a6b3b8;
+    --line:rgba(255,255,255,.12); --accent:#38c0d8; --accent-ink:#04222a; --accent-soft:rgba(56,192,216,.14);
+    --ok:#54c983; --warn:#e0b24d; --danger:#f0857e; --pending:#6c7880;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.5); --shadow-lg:0 16px 48px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
+    font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  h1,h2,h3{margin:0;font-weight:650;letter-spacing:-.02em;line-height:1.1}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  button{font-family:inherit;font-size:inherit;cursor:pointer;border:0;background:none;color:inherit}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+
+  /* App bar — translucent floating chrome */
+  .appbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 72%,transparent);
+    backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
+    border-bottom:1px solid var(--line)}
+  .appbar .wrap{display:flex;align-items:center;gap:14px;height:60px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.02em;font-size:18px}
+  .brand .logo{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
+    background:var(--accent);color:var(--accent-ink);font-size:16px}
+  .grow{flex:1}
+  .badges{display:flex;gap:6px;align-items:center}
+  .badge{font-size:12px;padding:4px 9px;border-radius:999px;background:var(--surface-2);
+    color:var(--ink-2);border:1px solid var(--line);white-space:nowrap}
+  .iconbtn{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;
+    background:var(--surface-2);border:1px solid var(--line);transition:transform var(--spring)}
+  .iconbtn:active{transform:scale(.92)}
+
+  /* Hero */
+  .hero{padding:40px 0 8px}
+  .hero h1{font-size:clamp(1.9rem,4.6vw,3rem);letter-spacing:-.03em}
+  .hero p.lede{color:var(--ink-2);font-size:clamp(1rem,2vw,1.15rem);max-width:60ch;margin:14px 0 0}
+
+  /* Ethics banner */
+  .ethics{margin:22px 0 6px;border:1px solid var(--line);border-left:4px solid var(--accent);
+    background:var(--accent-soft);border-radius:12px;padding:14px 16px;font-size:14px;color:var(--ink)}
+  .ethics b{font-weight:650}
+
+  /* Panels */
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:20px}
+  .grid{display:grid;grid-template-columns:1fr;gap:18px;margin:22px 0 60px}
+  @media(min-width:900px){.grid{grid-template-columns:minmax(340px,420px) 1fr}}
+  .section-title{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);
+    font-weight:650;margin-bottom:12px}
+
+  /* Segmented control */
+  .seg{display:flex;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+  .seg button{flex:1;padding:9px 8px;border-radius:9px;font-size:13px;font-weight:600;color:var(--ink-2);
+    transition:transform var(--spring),background var(--spring),color var(--spring)}
+  .seg button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+  .seg button:active{transform:scale(.97)}
+  .field{margin-top:16px}
+  .field>label{display:block;font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:7px}
+  select,input[type=number]{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
+    background:var(--surface-2);color:var(--ink);font-size:15px;transition:border-color var(--spring),box-shadow var(--spring)}
+  select:focus,input:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .pill-group{display:flex;gap:6px}
+  .pill-group button{flex:1;padding:9px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);
+    font-weight:600;color:var(--ink-2);transition:transform var(--spring)}
+  .pill-group button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+  .pill-group button:active{transform:scale(.96)}
+  .hint{margin-top:8px;font-size:12px;line-height:1.5;color:var(--ink-2)}
+  .seg.sub button{font-size:12px;padding:7px 8px}
+
+  /* Tooth rows */
+  .teeth{display:grid;gap:9px;margin-top:6px}
+  .tooth{display:grid;grid-template-columns:74px 1fr;align-items:center;gap:10px}
+  .tooth .tname{font-size:13px;color:var(--ink-2);font-weight:600}
+  .tooth .tname small{display:block;font-weight:500;color:var(--pending);font-size:11px}
+  .apex{display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;align-items:center}
+  .apex .tog{display:flex;gap:4px}
+  .apex .tog button{padding:7px 10px;font-size:12px;border-radius:8px;border:1px solid var(--line);
+    background:var(--surface-2);color:var(--ink-2);font-weight:600}
+  .apex .tog button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+  .apex input{padding:8px 10px;font-size:14px}
+  .apex input:disabled{opacity:.4}
+  .derived{margin-top:12px;font-size:13px;color:var(--ink-2);display:flex;gap:14px;flex-wrap:wrap}
+  .derived b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+  /* Result cards */
+  .results{display:grid;gap:14px}
+  .rescard{border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px 18px;background:var(--surface);
+    transition:transform var(--spring),box-shadow var(--spring)}
+  .rescard .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+  .rescard h3{font-size:15px}
+  .rescard .fam{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--pending);font-weight:650}
+  .age{font-size:clamp(2rem,5vw,2.6rem);font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+  .age small{font-size:.42em;font-weight:600;color:var(--ink-2);letter-spacing:0}
+  .score{font-size:13px;color:var(--ink-2);margin-top:2px}
+  .cibar{position:relative;height:8px;border-radius:99px;background:var(--surface-2);margin:14px 0 6px;overflow:hidden}
+  .cibar>span{position:absolute;top:0;bottom:0;background:var(--accent);opacity:.5;border-radius:99px}
+  .cibar>i{position:absolute;top:-3px;width:2px;height:14px;background:var(--accent)}
+  .cilabels{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+  .warns{margin:10px 0 0;padding:0;list-style:none}
+  .warns li{font-size:12.5px;color:var(--warn);margin-top:5px}
+  details.trace{margin-top:10px}
+  details.trace summary{font-size:12.5px;color:var(--accent);cursor:pointer}
+  details.trace pre{white-space:pre-wrap;font-size:12px;color:var(--ink-2);background:var(--surface-2);
+    padding:10px 12px;border-radius:9px;margin:8px 0 0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .cite{font-size:12px;color:var(--ink-2);margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+  .rescard.pending{opacity:.72;border-style:dashed;background:transparent}
+  .rescard.pending .age{color:var(--pending);font-size:1.2rem}
+  .tag{font-size:11px;font-weight:650;padding:3px 8px;border-radius:99px}
+  .tag.v{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+  .tag.p{background:var(--surface-2);color:var(--pending)}
+
+  /* Comparison axis */
+  .compare{margin-top:2px}
+  .axis{position:relative;height:44px;margin:20px 6px 4px}
+  .axis .track{position:absolute;left:0;right:0;top:20px;height:2px;background:var(--line)}
+  .axis .tick{position:absolute;top:14px;transform:translateX(-50%);font-size:10px;color:var(--pending)}
+  .axis .tick b{display:block;width:1px;height:8px;background:var(--line);margin:0 auto 3px}
+  .row{position:relative;height:30px;margin:2px 6px}
+  .row .lab{position:absolute;left:0;font-size:12px;color:var(--ink-2);top:7px}
+  .row .band{position:absolute;height:10px;top:9px;background:var(--accent);opacity:.28;border-radius:99px}
+  .row .pt{position:absolute;top:5px;width:12px;height:12px;border-radius:50%;background:var(--accent);
+    transform:translateX(-50%);border:2px solid var(--surface)}
+
+  footer{border-top:1px solid var(--line);padding:26px 0 60px;color:var(--ink-2);font-size:13px}
+  footer .disc{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+  footer a{font-weight:600}
+
+  /* Ethics gate modal */
+  .gate{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;
+    background:rgba(6,12,15,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+  .gate .box{max-width:540px;background:var(--surface);border:1px solid var(--line);border-radius:20px;
+    box-shadow:var(--shadow-lg);padding:26px 26px 22px;animation:rise var(--spring)}
+  .gate h2{font-size:20px;margin-bottom:10px}
+  .gate p{font-size:14px;color:var(--ink-2);margin:0 0 12px}
+  .gate .cta{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+  .btn{padding:11px 18px;border-radius:11px;font-weight:650;font-size:14px;background:var(--accent);
+    color:var(--accent-ink);transition:transform var(--spring),filter var(--spring)}
+  .btn:active{transform:scale(.97)}
+  .btn.secondary{background:var(--surface-2);color:var(--ink);border:1px solid var(--line)}
+  @keyframes rise{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+  [hidden]{display:none!important}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  @media (prefers-reduced-transparency:reduce){.appbar,.gate{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}}
+  @media (prefers-contrast:more){:root{--line:rgba(20,40,48,.4)} .rescard,.panel{border-width:1.5px}}
+  @media print{.appbar,.gate,.controls,.iconbtn,.badges,details.trace{display:none!important}
+    body{background:#fff;color:#000} .panel,.rescard{box-shadow:none;border:1px solid #ccc}}
+</style>
+</head>
+<body>
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-h">
+  <div class="box">
+    <h2 id="gate-h">Before you use OdontoAge</h2>
+    <p><b>This is a research and educational tool.</b> It re-implements published dental
+      age-estimation methods so they can be inspected, tested, and cited. It does not make
+      decisions about real people.</p>
+    <p>Estimated dental age is <b>not</b> chronological age and carries substantial uncertainty
+      (often ±1 year or more in children, and several years in adults). It must never be the sole
+      basis for a legal, forensic, immigration, or clinical decision.</p>
+    <p>Age assessment of living people — including asylum age-disputes — raises serious scientific
+      and ethical concerns. Please follow the guidance of the relevant professional bodies and keep
+      a qualified expert in the loop.</p>
+    <div class="cta">
+      <button class="btn" id="gate-ok">I understand — continue</button>
+      <a class="btn secondary" href="https://github.com/Hezarani/odontoage#readme" target="_blank" rel="noopener">Read the documentation</a>
+    </div>
+  </div>
+</div>
+
+<header class="appbar">
+  <div class="wrap">
+    <div class="brand"><span class="logo">🦷</span> OdontoAge</div>
+    <div class="grow"></div>
+    <div class="badges">
+      <a class="badge" href="https://pypi.org/project/odontoage/" target="_blank" rel="noopener">PyPI</a>
+      <a class="badge" href="https://github.com/Hezarani/odontoage" target="_blank" rel="noopener">GitHub</a>
+      <span class="badge" id="doi-badge">DOI: pending</span>
+    </div>
+    <button class="iconbtn" id="theme" title="Toggle light / dark" aria-label="Toggle theme">◐</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Open dental age estimation</h1>
+    <p class="lede">A cross-verified, tested reference implementation of the classic
+      dental age-estimation methods — Cameriere, Demirjian, Willems and Kvaal — with citations,
+      confidence intervals, and a transparent reasoning trace for every result.</p>
+    <div class="ethics">
+      <b>Research / education only.</b> Dental age ≠ chronological age. Never use as the sole basis
+      for any legal, forensic, immigration or clinical decision. See the ethics note below.
+    </div>
+  </section>
+
+  <div class="grid">
+    <!-- INPUTS -->
+    <section class="panel controls">
+      <div class="section-title">1 · Choose an approach</div>
+      <div class="seg" id="mode" role="tablist">
+        <button role="tab" data-mode="staged" aria-selected="true">Staged teeth</button>
+        <button role="tab" data-mode="apices" aria-selected="false">Open apices</button>
+        <button role="tab" data-mode="adult" aria-selected="false">Adult</button>
+      </div>
+
+      <div class="field" id="sex-field">
+        <label>Sex</label>
+        <div class="pill-group" id="sex">
+          <button data-sex="female" aria-pressed="true">Female</button>
+          <button data-sex="male" aria-pressed="false">Male</button>
+        </div>
+      </div>
+
+      <!-- staged panel -->
+      <div id="panel-staged" class="modepanel">
+        <div class="field"><label>Developmental stage of each lower-left permanent tooth (A–H)</label>
+          <div class="teeth" id="stage-teeth"></div>
+        </div>
+      </div>
+
+      <!-- apices panel -->
+      <div id="panel-apices" class="modepanel" hidden>
+        <div class="field"><label>Each lower-left tooth: apex open? give A<sub>i</sub> and L<sub>i</sub> (mm)</label>
+          <div class="teeth" id="apex-teeth"></div>
+          <div class="derived" id="apex-derived"></div>
+        </div>
+      </div>
+
+      <!-- adult panel -->
+      <div id="panel-adult" class="modepanel" hidden>
+        <div class="field"><label>Cameriere — canine pulp/tooth <b>area</b> ratio (RA)</label>
+          <div class="seg sub" id="canine-pos" role="tablist" style="margin-bottom:8px">
+            <button role="tab" data-canine="upper" aria-selected="true">Upper canine</button>
+            <button role="tab" data-canine="lower" aria-selected="false">Lower canine</button>
+          </div>
+          <input type="number" id="adult-ratio" step="0.001" min="0" max="1" placeholder="RA — pulp area ÷ tooth area, e.g. 0.12" />
+        </div>
+        <div class="field"><label>Kvaal — tooth / model</label>
+          <select id="kvaal-eq"></select>
+          <div style="height:8px"></div>
+          <input type="number" id="kvaal-M" step="0.001" placeholder="M — mean pulp/tooth ratio, e.g. 0.25" />
+          <div style="height:8px"></div>
+          <input type="number" id="kvaal-WL" step="0.001" placeholder="W − L — second predictor, e.g. 0.06" />
+          <div class="hint" id="kvaal-hint"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section>
+      <div class="section-title">2 · Estimates</div>
+      <div class="results" id="results"></div>
+      <div class="panel compare" id="compare-panel" style="margin-top:14px" hidden>
+        <div class="section-title">Side-by-side (years)</div>
+        <div id="compare"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="disc" id="foot-disc"></div>
+    <p><b>Ethics.</b> Radiographic age estimation of living people (e.g. unaccompanied minors in
+      asylum age-disputes) is scientifically limited and ethically contested — error margins are wide
+      and a misclassified child can lose safeguarding. Several professional and radiology bodies have
+      raised concerns about radiation exposure without clinical benefit. OdontoAge exists to make the
+      published methods transparent and testable, not to endorse any particular use.</p>
+    <p style="margin-top:14px">Open-source (MIT). Author: <a href="https://orcid.org/0009-0007-8481-0498" target="_blank" rel="noopener">Hossein Boustani Hezarani (ORCID)</a>.
+      Methods and exact parameters are documented, with sources, in
+      <a href="https://github.com/Hezarani/odontoage/blob/main/docs/EVIDENCE.md" target="_blank" rel="noopener">EVIDENCE.md</a>.
+      Cite via the repository <code>CITATION.cff</code> / Zenodo DOI.</p>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script src="engine.js"></script>
+<script>
+(function(){
+  "use strict";
+  var DATA = window.ODONTOAGE_DATA, OA = window.OdontoAge;
+  var TEETH = OA.TEETH;
+  var TOOTH_NAMES = {I1:"Central incisor",I2:"Lateral incisor",C:"Canine",PM1:"1st premolar",
+    PM2:"2nd premolar",M1:"1st molar",M2:"2nd molar"};
+  var TOOTH_FDI = {I1:"31",I2:"32",C:"33",PM1:"34",PM2:"35",M1:"36",M2:"37"};
+  var STAGES = ["A","B","C","D","E","F","G","H"];
+  var STAGE_HINT = { // concise paraphrased developmental descriptions (facts), not verbatim source prose
+    "—":"tooth absent / not yet calcifying",
+    A:"first calcification of cusp tips, not yet fused",
+    B:"cusps fused; occlusal outline defined",
+    C:"crown enamel complete; dentine deposition begun",
+    D:"crown complete to the cemento-enamel junction; root formation started",
+    E:"root shorter than crown height; root bifurcation begins (molars)",
+    F:"root length ≥ crown height; apex funnel-shaped",
+    G:"root walls parallel; apical end still open",
+    H:"apical foramen fully closed"
+  };
+  var state = {mode:"staged", sex:"female", stages:{}, apices:{}, adult:{canine:"upper", kvaalEq:"six_teeth"}};
+  TEETH.forEach(function(t){ state.stages[t]="—"; state.apices[t]={open:true,Ai:"",Li:""}; });
+
+  document.getElementById("foot-disc").textContent = OA.DISCLAIMER;
+  var doiBadge=document.getElementById("doi-badge");
+
+  /* ----- Ethics gate ----- */
+  var gate=document.getElementById("gate");
+  try{ if(localStorage.getItem("odontoage_ack")==="1") gate.hidden=true; }catch(e){}
+  document.getElementById("gate-ok").addEventListener("pointerdown",function(){
+    gate.hidden=true; try{localStorage.setItem("odontoage_ack","1");}catch(e){}
+  });
+
+  /* ----- Theme ----- */
+  var root=document.documentElement;
+  try{ var th=localStorage.getItem("odontoage_theme"); if(th) root.setAttribute("data-theme",th);}catch(e){}
+  document.getElementById("theme").addEventListener("pointerdown",function(){
+    var cur=root.getAttribute("data-theme");
+    var next = cur==="dark" ? "light" : (cur==="light" ? "dark" :
+      (matchMedia("(prefers-color-scheme:dark)").matches?"light":"dark"));
+    root.setAttribute("data-theme",next); try{localStorage.setItem("odontoage_theme",next);}catch(e){}
+  });
+
+  /* ----- Build staged inputs ----- */
+  var stEl=document.getElementById("stage-teeth");
+  TEETH.forEach(function(t){
+    var row=document.createElement("div"); row.className="tooth";
+    row.innerHTML='<div class="tname">'+TOOTH_NAMES[t]+'<small>FDI '+TOOTH_FDI[t]+'</small></div>';
+    var sel=document.createElement("select");
+    ["—"].concat(STAGES).forEach(function(s){
+      var o=document.createElement("option"); o.value=s; o.textContent=s==="—"?"—":("Stage "+s);
+      o.title=STAGE_HINT[s]||""; sel.appendChild(o);
+    });
+    sel.value=state.stages[t];
+    sel.addEventListener("change",function(){ state.stages[t]=sel.value; compute(); });
+    row.appendChild(sel); stEl.appendChild(row);
+  });
+
+  /* ----- Build apex inputs ----- */
+  var apEl=document.getElementById("apex-teeth");
+  TEETH.forEach(function(t){
+    var row=document.createElement("div"); row.className="tooth";
+    row.innerHTML='<div class="tname">'+TOOTH_NAMES[t]+'<small>FDI '+TOOTH_FDI[t]+'</small></div>';
+    var wrap=document.createElement("div"); wrap.className="apex";
+    var tog=document.createElement("div"); tog.className="tog";
+    var bOpen=document.createElement("button"), bClosed=document.createElement("button");
+    bOpen.textContent="open"; bClosed.textContent="closed";
+    var ai=document.createElement("input"); ai.type="number"; ai.step="0.01"; ai.placeholder="Aᵢ mm";
+    var li=document.createElement("input"); li.type="number"; li.step="0.01"; li.placeholder="Lᵢ mm";
+    function sync(){
+      bOpen.setAttribute("aria-pressed", state.apices[t].open?"true":"false");
+      bClosed.setAttribute("aria-pressed", state.apices[t].open?"false":"true");
+      ai.disabled=!state.apices[t].open; li.disabled=!state.apices[t].open;
+    }
+    bOpen.addEventListener("pointerdown",function(){state.apices[t].open=true;sync();compute();});
+    bClosed.addEventListener("pointerdown",function(){state.apices[t].open=false;sync();compute();});
+    ai.addEventListener("input",function(){state.apices[t].Ai=ai.value;compute();});
+    li.addEventListener("input",function(){state.apices[t].Li=li.value;compute();});
+    tog.appendChild(bOpen);tog.appendChild(bClosed);
+    wrap.appendChild(tog);wrap.appendChild(ai);wrap.appendChild(li);
+    row.appendChild(wrap); apEl.appendChild(row); sync();
+  });
+
+  document.getElementById("adult-ratio").addEventListener("input",function(e){state.adult.ratio=e.target.value;compute();});
+  document.getElementById("kvaal-M").addEventListener("input",function(e){state.adult.M=e.target.value;compute();});
+  document.getElementById("kvaal-WL").addEventListener("input",function(e){state.adult.WL=e.target.value;compute();});
+
+  /* Cameriere upper/lower canine toggle */
+  document.querySelectorAll('#canine-pos button').forEach(function(b){
+    b.addEventListener("pointerdown",function(){
+      state.adult.canine=b.dataset.canine;
+      document.querySelectorAll('#canine-pos button').forEach(function(x){x.setAttribute("aria-selected",x===b?"true":"false");});
+      compute();
+    });
+  });
+
+  /* Kvaal equation dropdown (populated from the shipped data) */
+  var kEqSel=document.getElementById("kvaal-eq");
+  var kEqs=(DATA.methods.kvaal_1995||{}).equations||{};
+  Object.keys(kEqs).forEach(function(name){
+    var o=document.createElement("option"); o.value=name; o.textContent=kEqs[name].label||name;
+    kEqSel.appendChild(o);
+  });
+  kEqSel.value=state.adult.kvaalEq;
+  function kvaalEqDef(){ return kEqs[state.adult.kvaalEq]||{}; }
+  function needsWL(){ return kvaalEqDef().W_minus_L!=null; }
+  function needsSex(){ return kvaalEqDef().G!=null; }
+  function syncKvaalUI(){
+    var wl=document.getElementById("kvaal-WL");
+    wl.disabled=!needsWL();
+    wl.style.opacity=needsWL()?"1":".45";
+    wl.placeholder=needsWL()?"W − L — second predictor, e.g. 0.06":"W − L — not used for this tooth";
+    var eq=kvaalEqDef();
+    var bits=[];
+    if(eq.see!=null) bits.push("SEE ≈ "+eq.see+" y");
+    if(!needsWL()) bits.push("second predictor (W−L) omitted for this tooth");
+    if(needsSex()) bits.push("uses sex (male/female)");
+    document.getElementById("kvaal-hint").textContent=bits.join(" · ");
+  }
+  kEqSel.addEventListener("change",function(e){
+    state.adult.kvaalEq=e.target.value; syncKvaalUI(); syncSexField(); compute();
+  });
+
+  /* Sex field is shown outside adult mode, and inside adult mode only for the one
+     Kvaal equation (mandibular lateral incisor) that carries a gender term. */
+  function syncSexField(){
+    var show = (state.mode!=="adult") || (state.mode==="adult" && needsSex());
+    document.getElementById("sex-field").hidden = !show;
+  }
+
+  /* ----- Mode + sex ----- */
+  document.querySelectorAll('#mode button').forEach(function(b){
+    b.addEventListener("pointerdown",function(){
+      state.mode=b.dataset.mode;
+      document.querySelectorAll('#mode button').forEach(function(x){x.setAttribute("aria-selected",x===b?"true":"false");});
+      document.getElementById("panel-staged").hidden = state.mode!=="staged";
+      document.getElementById("panel-apices").hidden = state.mode!=="apices";
+      document.getElementById("panel-adult").hidden = state.mode!=="adult";
+      syncSexField();
+      compute();
+    });
+  });
+  document.querySelectorAll('#sex button').forEach(function(b){
+    b.addEventListener("pointerdown",function(){
+      state.sex=b.dataset.sex;
+      document.querySelectorAll('#sex button').forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});
+      compute();
+    });
+  });
+
+  /* ----- Gather inputs for the engine per mode ----- */
+  function apexTeeth(){
+    var teeth={};
+    TEETH.forEach(function(t){
+      var a=state.apices[t];
+      if(!a.open){ teeth[t]={closed:true}; }
+      else if(a.Ai!==""&&a.Li!==""){ teeth[t]={open:true,Ai:parseFloat(a.Ai),Li:parseFloat(a.Li)}; }
+      else { teeth[t]=null; } // incomplete
+    });
+    return teeth;
+  }
+  function apexComplete(teeth){ return TEETH.every(function(t){return teeth[t]!==null;}); }
+
+  function methodsForMode(){
+    return Object.keys(DATA.methods).filter(function(id){
+      var m=DATA.methods[id];
+      if(state.mode==="staged") return m.measurement==="staging";
+      if(state.mode==="apices") return m.measurement==="open_apices";
+      if(m.dentition!=="adult") return false;
+      // Adult: show only the Cameriere canine that matches the upper/lower toggle,
+      // alongside Kvaal.
+      if(m.family==="cameriere"){
+        var want = state.adult.canine==="upper" ? "cameriere_adult_upper_2009" : "cameriere_adult_lower_2009";
+        return id===want;
+      }
+      return true;
+    });
+  }
+
+  function derivedApex(){
+    var teeth=apexTeeth(); var el=document.getElementById("apex-derived");
+    if(!apexComplete(teeth)){ el.innerHTML='<span>Fill all seven teeth to compute x5, N0, s.</span>'; return; }
+    try{
+      var g = OA.sexToG(state.sex);
+      // reuse engine by calling estimate on a verified method to expose variables via reasoning
+      var xs={},N0=0,s=0;
+      TEETH.forEach(function(t){var v=teeth[t].closed?0:(teeth[t].Ai/teeth[t].Li);xs[t]=v;if(v===0)N0++;s+=v;});
+      el.innerHTML='<span>x5 <b>'+xs.PM2.toFixed(3)+'</b></span><span>N0 <b>'+N0+'</b></span><span>s <b>'+s.toFixed(3)+'</b></span>';
+    }catch(e){ el.textContent=""; }
+  }
+
+  /* ----- Compute + render ----- */
+  function compute(){
+    var ids=methodsForMode();
+    var inputs={sex:state.sex};
+    if(state.mode==="staged"){
+      var stages={}; var any=false;
+      TEETH.forEach(function(t){ if(state.stages[t]!=="—"){stages[t]=state.stages[t];any=true;} else {stages[t]="0";} });
+      inputs.stages=stages; inputs._ready=any;
+    } else if(state.mode==="apices"){
+      var teeth=apexTeeth(); inputs.teeth=teeth; inputs._ready=apexComplete(teeth); derivedApex();
+    } else {
+      inputs._ready=true;
+    }
+    render(ids, inputs);
+  }
+
+  function fmt(x){ return (Math.round(x*100)/100).toFixed(2); }
+
+  function render(ids, inputs){
+    var box=document.getElementById("results"); box.innerHTML="";
+    var estimates=[];
+    ids.forEach(function(id){
+      var m=DATA.methods[id];
+      var card=document.createElement("div"); card.className="rescard"+(m.verified?"":" pending");
+      var head='<div class="top"><div><h3>'+m.label+'</h3><span class="fam">'+m.family+' · '+m.dentition+'</span></div>'+
+               '<span class="tag '+(m.verified?"v":"p")+'">'+(m.verified?"verified":"pending")+'</span></div>';
+      if(!m.verified){
+        card.innerHTML=head+'<div class="age">—</div><div class="score">Parameters pending cross-verification; not yet enabled.</div>';
+        box.appendChild(card); return;
+      }
+      // build per-method inputs
+      var inp={sex:inputs.sex};
+      if(state.mode==="staged") inp.stages=inputs.stages;
+      if(state.mode==="apices") inp.teeth=inputs.teeth;
+      if(state.mode==="adult"){
+        if(m.family==="cameriere"){
+          if(state.adult.ratio==null||state.adult.ratio===""){ placeholder(card,head,"Enter the canine pulp/tooth area ratio (RA)."); box.appendChild(card); return; }
+          inp.variables={RA:parseFloat(state.adult.ratio)};
+        }
+        if(m.family==="kvaal"){
+          inp.equation=state.adult.kvaalEq;
+          if(state.adult.M==null||state.adult.M===""){ placeholder(card,head,"Enter the mean pulp/tooth ratio M."); box.appendChild(card); return; }
+          var v={M:parseFloat(state.adult.M)};
+          if(needsWL()){
+            if(state.adult.WL==null||state.adult.WL===""){ placeholder(card,head,"Enter the second predictor (W − L)."); box.appendChild(card); return; }
+            v.W_minus_L=parseFloat(state.adult.WL);
+          }
+          inp.variables=v;
+          inp.sex=needsSex()?state.sex:null;
+        }
+      }
+      if(state.mode!=="adult" && !inputs._ready){ placeholder(card,head,"Complete the inputs on the left."); box.appendChild(card); return; }
+      try{
+        var e=OA.estimate(DATA,id,inp); estimates.push(e);
+        var body='';
+        if(e.estimatedAgeYears!=null){
+          body+='<div class="age">'+fmt(e.estimatedAgeYears)+' <small>years</small></div>';
+          if(e.interval) body+=ciBar(e);
+          if(e.maturityScore!=null) body+='<div class="score">Maturity score '+e.maturityScore.toFixed(1)+' / 100</div>';
+        } else if(e.maturityScore!=null){
+          body+='<div class="age">'+e.maturityScore.toFixed(1)+' <small>/ 100</small></div>';
+          body+='<div class="score">Demirjian maturity score — use Willems for age from the same staging</div>';
+        } else {
+          body+='<div class="age" style="font-size:1.2rem;color:var(--ink-2)">—</div>';
+        }
+        if(e.warnings&&e.warnings.length){ body+='<ul class="warns">'+e.warnings.map(function(w){return '<li>⚠ '+esc(w)+'</li>';}).join("")+'</ul>'; }
+        body+='<details class="trace"><summary>Show reasoning</summary><pre>'+esc((e.reasoning||[]).join("\n"))+'</pre></details>';
+        body+='<div class="cite">'+esc(e.citation||"")+(e.doi?(' · <a href="https://doi.org/'+e.doi+'" target="_blank" rel="noopener">doi:'+e.doi+'</a>'):"")+'</div>';
+        card.innerHTML=head+body;
+      }catch(err){ placeholder(card,head,String(err.message||err)); }
+      box.appendChild(card);
+    });
+    renderCompare(estimates);
+  }
+  function placeholder(card,head,msg){ card.innerHTML=head+'<div class="age" style="font-size:1.1rem;color:var(--ink-2)">…</div><div class="score">'+esc(msg)+'</div>'; }
+  function esc(s){ return String(s).replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];}); }
+
+  function ciBar(e){
+    var lo=e.interval.low, hi=e.interval.high, a=e.estimatedAgeYears;
+    var min=Math.max(0,Math.floor(lo-1)), max=Math.ceil(hi+1); var span=max-min||1;
+    function pc(x){return ((x-min)/span*100).toFixed(1)+"%";}
+    return '<div class="cibar"><span style="left:'+pc(lo)+';right:'+(100-parseFloat(pc(hi)))+'%"></span>'+
+           '<i style="left:'+pc(a)+'"></i></div>'+
+           '<div class="cilabels"><span>'+fmt(lo)+'</span><span>95% interval</span><span>'+fmt(hi)+'</span></div>';
+  }
+
+  function renderCompare(estimates){
+    var wrap=document.getElementById("compare-panel"); var el=document.getElementById("compare");
+    var withAge=estimates.filter(function(e){return e.estimatedAgeYears!=null;});
+    if(withAge.length<2){ wrap.hidden=true; return; } wrap.hidden=false; el.innerHTML="";
+    var lo=1e9,hi=-1e9;
+    withAge.forEach(function(e){ var l=e.interval?e.interval.low:e.estimatedAgeYears, h=e.interval?e.interval.high:e.estimatedAgeYears; lo=Math.min(lo,l,e.estimatedAgeYears); hi=Math.max(hi,h,e.estimatedAgeYears); });
+    lo=Math.max(0,Math.floor(lo-1)); hi=Math.ceil(hi+1); var span=hi-lo||1;
+    function pc(x){return ((x-lo)/span*100);}
+    var axis=document.createElement("div"); axis.className="axis";
+    var ticks='<div class="track"></div>';
+    for(var y=lo;y<=hi;y++){ ticks+='<div class="tick" style="left:'+pc(y)+'%"><b></b>'+y+'</div>'; }
+    axis.innerHTML=ticks; el.appendChild(axis);
+    withAge.forEach(function(e){
+      var r=document.createElement("div"); r.className="row";
+      var band=e.interval?('<div class="band" style="left:'+pc(e.interval.low)+'%;width:'+(pc(e.interval.high)-pc(e.interval.low))+'%"></div>'):"";
+      r.innerHTML='<div class="lab">'+shortName(e.method)+'</div>'+band+
+        '<div class="pt" title="'+fmt(e.estimatedAgeYears)+' y" style="left:'+pc(e.estimatedAgeYears)+'%"></div>';
+      el.appendChild(r);
+    });
+  }
+  function shortName(id){ return id.replace(/_/g," ").replace(/\b\d{4}\b/,"").trim(); }
+
+  if(DATA.version) doiBadge.textContent="v"+DATA.version;
+  syncKvaalUI(); syncSexField();
+  compute();
+})();
+</script>
+</body>
+</html>

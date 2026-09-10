@@ -1,0 +1,130 @@
+{
+  "family": "kvaal",
+  "family_label": "Kvaal et al. (1995) adult age estimation (pulp/tooth size ratios)",
+  "schema_version": "1.0",
+  "methods": {
+    "kvaal_1995": {
+      "id": "kvaal_1995",
+      "label": "Kvaal et al. (1995) - pulp/tooth size-ratio regression (adults)",
+      "family": "kvaal",
+      "kind": "regression",
+      "dentition": "adult",
+      "measurement": "pulp_tooth_ratio",
+      "sex_required": false,
+      "sex_required_note": "Sex (gender) is only used by the mandibular-lateral-incisor equation (32/42); all other equations ignore it.",
+      "age_range_years": [20, 85],
+      "age_range_note": "Reference sample of 100 adults (Norwegian, ages ~20-84). Measurements are made on standardised peri-apical radiographs of fully developed teeth.",
+      "measurement_protocol": {
+        "raw_measurements": "On each tooth's peri-apical radiograph, six lengths/widths are measured (Kvaal et al. 1995, Fig. 1): T = maximum tooth length; R = root length on the mesial surface; P = maximum pulp length; and pulp & root widths at three levels - A (enamel-cementum junction), B (midway between A and C) and C (mid-root, midway between apex and ECJ).",
+        "ratios": "To cancel radiographic magnification, ratios of pulp to tooth/root dimensions are formed: p = pulp-length/root-length (P), r = pulp-length/tooth-length (R), and pulp/root width ratios a, b, c at levels A, B, C. (The tooth/root length ratio T was only weakly correlated with age and is not used.)",
+        "predictors": {
+          "M": "First predictor: mean of the five ratios (p, r, a, b, c) for the tooth (or the mean across all teeth of a multi-tooth model). Approximates the first principal component (overall pulp size).",
+          "W": "Mean of the width ratios at levels B and C.",
+          "L": "Mean of the length ratios p and r.",
+          "W_minus_L": "Second predictor = W - L (approximates the second principal component, pulp shape)."
+        }
+      },
+      "inputs": {
+        "M": "required for every equation - the mean-of-ratios first predictor (dimensionless, typically ~0.15-0.35).",
+        "W_minus_L": "required for every equation EXCEPT the mandibular canine (33/43); may be supplied directly, or as separate W and L (then W-L is computed).",
+        "sex": "required ONLY by equation 'mandibular_lateral_incisor' (32/42); male = 1, female = 0."
+      },
+      "default_equation": "six_teeth",
+      "equations": {
+        "six_teeth": {
+          "label": "Six teeth from both jaws (11/21, 12/22, 15/25, 34/44, 33/43, 32/42)",
+          "teeth_fdi": "11/21, 12/22, 15/25, 34/44, 33/43, 32/42",
+          "intercept": 129.8,
+          "M": -316.4,
+          "W_minus_L": -66.8,
+          "G": null,
+          "r_squared": 0.76,
+          "see": 8.6
+        },
+        "maxillary_three": {
+          "label": "Three maxillary teeth (11/21, 12/22, 15/25)",
+          "teeth_fdi": "11/21, 12/22, 15/25",
+          "intercept": 120.0,
+          "M": -256.6,
+          "W_minus_L": -45.3,
+          "G": null,
+          "r_squared": 0.74,
+          "see": 8.9
+        },
+        "mandibular_three": {
+          "label": "Three mandibular teeth (34/44, 33/43, 32/42)",
+          "teeth_fdi": "34/44, 33/43, 32/42",
+          "intercept": 135.3,
+          "M": -356.8,
+          "W_minus_L": -82.5,
+          "G": null,
+          "r_squared": 0.71,
+          "see": 9.4
+        },
+        "maxillary_central_incisor": {
+          "label": "Maxillary central incisor (11/21)",
+          "teeth_fdi": "11/21",
+          "intercept": 110.2,
+          "M": -201.4,
+          "W_minus_L": -31.3,
+          "G": null,
+          "r_squared": 0.70,
+          "see": 9.5
+        },
+        "maxillary_lateral_incisor": {
+          "label": "Maxillary lateral incisor (12/22)",
+          "teeth_fdi": "12/22",
+          "intercept": 103.5,
+          "M": -216.6,
+          "W_minus_L": -46.6,
+          "G": null,
+          "r_squared": 0.67,
+          "see": 10.0
+        },
+        "maxillary_second_premolar": {
+          "label": "Maxillary second premolar (15/25)",
+          "teeth_fdi": "15/25",
+          "intercept": 125.3,
+          "M": -288.5,
+          "W_minus_L": -46.3,
+          "G": null,
+          "r_squared": 0.60,
+          "see": 11.0
+        },
+        "mandibular_first_premolar": {
+          "label": "Mandibular first premolar (34/44)",
+          "teeth_fdi": "34/44",
+          "intercept": 133.0,
+          "M": -318.3,
+          "W_minus_L": -65.0,
+          "G": null,
+          "r_squared": 0.64,
+          "see": 10.5
+        },
+        "mandibular_canine": {
+          "label": "Mandibular canine (33/43) - no second predictor (W-L omitted, P=0.06)",
+          "teeth_fdi": "33/43",
+          "intercept": 158.8,
+          "M": -255.7,
+          "W_minus_L": null,
+          "G": null,
+          "r_squared": 0.56,
+          "see": 11.5
+        },
+        "mandibular_lateral_incisor": {
+          "label": "Mandibular lateral incisor (32/42) - includes gender term",
+          "teeth_fdi": "32/42",
+          "intercept": 106.6,
+          "M": -251.7,
+          "W_minus_L": -61.2,
+          "G": -6.0,
+          "r_squared": 0.57,
+          "see": 11.5
+        }
+      },
+      "source": "kvaal_1995",
+      "verified": true,
+      "verification_note": "All nine Table 5 regression formulae transcribed from Kvaal et al. 1995 (Forensic Sci Int 74:175-185) rendered at full resolution; the 66.8 vs 6.8 ambiguity in text extraction was resolved visually (six-teeth coefficient is -66.8). Ratio/predictor definitions taken from the Table 2 legend. Note: mandibular canine (33/43) has NO W-L term (second predictor P=0.06); mandibular lateral incisor (32/42) is the ONLY equation with a gender term (-6.0*G, male=1/female=0)."
+    }
+  }
+}

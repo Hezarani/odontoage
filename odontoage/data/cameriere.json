@@ -1,0 +1,101 @@
+{
+  "family": "cameriere",
+  "family_label": "Cameriere open-apex & pulp/tooth methods",
+  "schema_version": "1.0",
+  "methods": {
+    "cameriere_italian_2006": {
+      "id": "cameriere_italian_2006",
+      "label": "Cameriere — Italian formula (open apices)",
+      "family": "cameriere",
+      "kind": "regression",
+      "dentition": "developing",
+      "measurement": "open_apices",
+      "sex_required": true,
+      "age_range_years": [5, 15],
+      "age_range_note": "Developed on Italian children; most accurate ~7-14 y (meta-analysis PMC7926662).",
+      "reported_stats": {"r_squared": 0.85, "note": "explained variance reported in original paper; confirm exact value"},
+      "regression": {
+        "intercept": 8.971,
+        "terms": [
+          {"var": "g",    "coef": 0.375,  "desc": "sex indicator (1 = male, 0 = female)"},
+          {"var": "x5",   "coef": 1.631,  "desc": "normalized open apex of the 2nd premolar = A5/L5"},
+          {"var": "N0",   "coef": 0.674,  "desc": "number of the 7 left mandibular teeth with CLOSED apices"},
+          {"var": "s",    "coef": -1.034, "desc": "sum of normalized open apices = sum(Ai/Li) over the 7 teeth"},
+          {"var": "s*N0", "coef": -0.176, "desc": "first-order interaction s x N0"}
+        ]
+      },
+      "source": "cameriere_2006_italian",
+      "verified": true,
+      "verification_note": "Coefficients cross-checked: PMC7926662 meta-analysis + medrech reproduction. DOI 10.1007/s00414-005-0047-9 (confirm)."
+    },
+    "cameriere_european_2007": {
+      "id": "cameriere_european_2007",
+      "label": "Cameriere — European formula (open apices)",
+      "family": "cameriere",
+      "kind": "regression",
+      "dentition": "developing",
+      "measurement": "open_apices",
+      "sex_required": true,
+      "age_range_years": [4, 16],
+      "age_range_note": "Multi-country European reference sample (~2652 children); most accurate ~7-14 y.",
+      "reported_stats": {"r_squared": 0.861, "median_residual_years": -0.114, "note": "from original 2007 paper"},
+      "regression": {
+        "intercept": 8.387,
+        "terms": [
+          {"var": "g",    "coef": 0.282,  "desc": "sex indicator (1 = male, 0 = female)"},
+          {"var": "x5",   "coef": -1.692, "desc": "normalized open apex of the 2nd premolar = A5/L5 (coefficient is negative in the European multivariate fit)"},
+          {"var": "N0",   "coef": 0.835,  "desc": "number of the 7 left mandibular teeth with CLOSED apices"},
+          {"var": "s",    "coef": -0.116, "desc": "sum of normalized open apices = sum(Ai/Li) over the 7 teeth"},
+          {"var": "s*N0", "coef": -0.139, "desc": "first-order interaction s x N0"}
+        ]
+      },
+      "source": "cameriere_2007_european",
+      "verified": true,
+      "verification_note": "Coefficients cross-checked: primary 2007 paper PDF (u-pad.unimc.it) + PMC7926662 meta-analysis. DOI 10.1007/s00414-007-0179-1 confirmed."
+    },
+    "cameriere_adult_upper_2009": {
+      "id": "cameriere_adult_upper_2009",
+      "label": "Cameriere - adult, upper (maxillary) canine pulp/tooth area ratio",
+      "family": "cameriere",
+      "kind": "regression",
+      "dentition": "adult",
+      "measurement": "pulp_tooth_area",
+      "sex_required": false,
+      "age_range_years": [20, 85],
+      "age_range_note": "Combined Italian + Portuguese adult sample (~20-84 y). Input RA = pulp area / tooth area of the MAXILLARY canine, measured by planimetry on a peri-apical radiograph.",
+      "prediction_error_years": 4.24,
+      "reported_stats": {"r_squared": 0.931, "see_years": 4.24, "mean_error_years": 3.32},
+      "regression": {
+        "intercept": 100.598,
+        "terms": [
+          {"var": "RA", "coef": -544.433, "desc": "pulp/tooth AREA ratio of the maxillary (upper) canine"}
+        ]
+      },
+      "source": "cameriere_2009_adult",
+      "verified": true,
+      "verification_note": "Common (Italian + Portuguese) regression, Table 5 / Eq.(3) of Cameriere et al. 2009 (Forensic Sci Int 193:128.e1-e6), read at full resolution."
+    },
+    "cameriere_adult_lower_2009": {
+      "id": "cameriere_adult_lower_2009",
+      "label": "Cameriere - adult, lower (mandibular) canine pulp/tooth area ratio",
+      "family": "cameriere",
+      "kind": "regression",
+      "dentition": "adult",
+      "measurement": "pulp_tooth_area",
+      "sex_required": false,
+      "age_range_years": [20, 85],
+      "age_range_note": "Combined Italian + Portuguese adult sample. Input RA = pulp area / tooth area of the MANDIBULAR canine.",
+      "prediction_error_years": 4.33,
+      "reported_stats": {"r_squared": 0.9285, "see_years": 4.33, "mean_error_years": 3.39},
+      "regression": {
+        "intercept": 91.362,
+        "terms": [
+          {"var": "RA", "coef": -480.901, "desc": "pulp/tooth AREA ratio of the mandibular (lower) canine"}
+        ]
+      },
+      "source": "cameriere_2009_adult",
+      "verified": true,
+      "verification_note": "Common (Italian + Portuguese) regression, Table 5 / Eq.(4) of Cameriere et al. 2009, read at full resolution."
+    }
+  }
+}

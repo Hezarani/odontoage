@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use OdontoAge in your research, please cite it as below."
+title: "OdontoAge: an open reference implementation of dental age-estimation methods"
+abstract: >-
+  OdontoAge is an open-source, cross-verified, tested reference implementation of the
+  classic dental age-estimation methods (Cameriere open-apex and pulp/tooth-area formulas,
+  Demirjian maturity scoring, Willems direct-age tables, and Kvaal adult pulp/tooth ratios).
+  It provides a Python library, a command-line tool, and a zero-install web application,
+  each producing an estimated age with a confidence interval, a transparent reasoning
+  trace, and the source citation. It is intended for research and education only.
+type: software
+authors:
+  - family-names: "Boustani Hezarani"
+    given-names: "Hossein"
+    orcid: "https://orcid.org/0009-0007-8481-0498"
+version: "0.1.0"
+date-released: "2026-09-03"
+license: MIT
+repository-code: "https://github.com/Hezarani/odontoage"
+url: "https://hezarani.github.io/odontoage/"
+keywords:
+  - dental age estimation
+  - forensic odontology
+  - Cameriere
+  - Demirjian
+  - Willems
+  - Kvaal
+  - legal medicine
+  - paediatric dentistry
+# doi: 10.5281/zenodo.XXXXXXX   # add the Zenodo concept DOI after the first release
