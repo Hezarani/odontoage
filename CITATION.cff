@@ -14,7 +14,7 @@ authors:
     given-names: "Hossein"
     orcid: "https://orcid.org/0009-0007-8481-0498"
 version: "0.1.0"
-date-released: "2026-09-03"
+date-released: "2026-09-10"
 license: MIT
 repository-code: "https://github.com/Hezarani/odontoage"
 url: "https://hezarani.github.io/odontoage/"
@@ -27,4 +27,11 @@ keywords:
   - Kvaal
   - legal medicine
   - paediatric dentistry
-# doi: 10.5281/zenodo.XXXXXXX   # add the Zenodo concept DOI after the first release
+doi: 10.5281/zenodo.22694379
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.22694379
+    description: "Concept DOI — cite this to refer to all versions"
+  - type: doi
+    value: 10.5281/zenodo.22694380
+    description: "Version DOI — this specific release (v0.1.0)"
