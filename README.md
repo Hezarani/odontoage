@@ -6,8 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://pypi.org/project/odontoage/)
 [![Live demo](https://img.shields.io/badge/demo-GitHub%20Pages-0e6a7e.svg)](https://hezarani.github.io/odontoage/)
-<!-- [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX) -->
-
+[![DOI](https://zenodo.org/badge/1364571849.svg)](https://doi.org/10.5281/zenodo.22694379)
 > ⚠️ **Research and education only.** Estimated dental age is **not** chronological age and carries substantial uncertainty. OdontoAge must **never** be the sole basis for any legal, forensic, immigration, or clinical decision about a real person. Age assessment of living people (e.g. asylum age-disputes) is scientifically limited and ethically contested — see [Ethics & limitations](#ethics--limitations).
 
 ---
